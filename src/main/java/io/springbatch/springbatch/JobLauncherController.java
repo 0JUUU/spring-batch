@@ -37,10 +37,10 @@ public class JobLauncherController {
             .addDate("date", new Date())
             .toJobParameters();
 
-        SimpleJobLauncher jobLauncher = (SimpleJobLauncher) basicBatchConfigurer.getJobLauncher();
+//        SimpleJobLauncher jobLauncher = (SimpleJobLauncher) basicBatchConfigurer.getJobLauncher();
         // 밑에 문장은 예외 발생 -> typeCasting 불가 (왜? 이미 인터페이스로 선언했던 친구이기에 JobLauncher에서는 갖고 있지 않은 setTaskExecutor를 호출할 수 없음!
 //        SimpleJobLauncher jobLauncher = (SimpleJobLauncher) this.jobLauncher;
-        jobLauncher.setTaskExecutor(new SimpleAsyncTaskExecutor());
+//        jobLauncher.setTaskExecutor(new SimpleAsyncTaskExecutor());
         jobLauncher.run(job, jobParameters);
 
         return "batch completed";

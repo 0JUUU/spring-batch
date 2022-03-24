@@ -35,6 +35,7 @@ public class JobLauncherConfiguration {
                                  .tasklet(new Tasklet() {
                                      @Override
                                      public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
+                                         Thread.sleep(3000);
                                          return RepeatStatus.FINISHED;
                                      }
                                  })
