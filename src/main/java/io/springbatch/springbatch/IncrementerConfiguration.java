@@ -23,7 +23,8 @@ public class IncrementerConfiguration {
         return this.jobBuilderFactory.get("batchJob")
                                      .start(step1())
                                      .next(step2())
-                                     .incrementer(new CustomJobParametersIncrementer())
+//                                     .incrementer(new CustomJobParametersIncrementer())
+                                     .incrementer(new RunIdIncrementer())ß
                                      .build();
     }
 
