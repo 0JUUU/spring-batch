@@ -101,7 +101,8 @@ public class StartNextConfiguration {
                                      @Override
                                      public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
                                          System.out.println(">> step4 has executed");
-                                         return RepeatStatus.FINISHED;
+                                         throw new RuntimeException(">> step4 has errored!");
+//                                         return RepeatStatus.FINISHED;
                                      }
                                  }).build();
     }
