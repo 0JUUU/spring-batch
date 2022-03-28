@@ -38,6 +38,7 @@ public class Limit_AllowConfiguration {
                     return RepeatStatus.FINISHED;
                 }
             })
+            .allowStartIfComplete(true)
             .build();
     }
 
