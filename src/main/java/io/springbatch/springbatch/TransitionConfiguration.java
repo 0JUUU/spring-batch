@@ -33,11 +33,21 @@ public class TransitionConfiguration {
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
 
+//    @Bean
+//    public Job batchJob() {
+//        return jobBuilderFactory.get("batchJob")
+//                                .start(step1())
+//                                .next(step2())
+//                                .build();
+//    }
+
     @Bean
     public Job batchJob() {
         return jobBuilderFactory.get("batchJob")
                                 .start(step1())
-                                .next(step2())
+                                .on("FAILED")
+                                .to(step2())
+                                .end()
                                 .build();
     }
 
@@ -48,6 +58,7 @@ public class TransitionConfiguration {
                                      @Override
                                      public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
                                          System.out.println(">> step1 has executed");
+                                         contribution.setExitStatus(ExitStatus.FAILED);
                                          return RepeatStatus.FINISHED;
                                      }
                                  }).build();
@@ -58,7 +69,6 @@ public class TransitionConfiguration {
         return stepBuilderFactory.get("step2")
                                  .tasklet((contribution, chunkContext) -> {
                                      System.out.println(">> step2 has executed");
-                                     contribution.setExitStatus(ExitStatus.FAILED);
                                      return RepeatStatus.FINISHED;
                                  }).build();
     }
