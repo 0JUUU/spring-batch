@@ -4,6 +4,8 @@ import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.core.job.flow.JobExecutionDecider;
+import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,8 +22,18 @@ public class JobExecutionDeciderConfiguration {
     @Bean
     public Job job() {
         return jobBuilderFactory.get("batchJob")
+            .incrementer(new RunIdIncrementer())
             .start(step())
+            .next(decider())
+            .from(decider()).on("ODD").to(oddStep())
+            .from(decider()).on("EVEN").to(evenStep())
+            .end()
             .build();
+    }
+
+    @Bean
+    public JobExecutionDecider decider() {
+        return new CustomDecider();
     }
 
     @Bean
@@ -38,7 +50,7 @@ public class JobExecutionDeciderConfiguration {
     public Step evenStep() {
         return stepBuilderFactory.get("evenStep")
                                  .tasklet((contribution, chunkContext) -> {
-                                     System.out.println(">>EvenStep has executed");
+                                     System.out.println(">> EvenStep has executed");
                                      return RepeatStatus.FINISHED;
                                  }).build();
     }
@@ -47,7 +59,7 @@ public class JobExecutionDeciderConfiguration {
     public Step oddStep() {
         return stepBuilderFactory.get("oddStep")
                                  .tasklet((contribution, chunkContext) -> {
-                                     System.out.println(">>OddStep has executed");
+                                     System.out.println(">> OddStep has executed");
                                      return RepeatStatus.FINISHED;
                                  }).build();
     }
