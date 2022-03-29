@@ -1,5 +1,6 @@
 package io.springbatch.springbatch;
 
+import java.util.Collections;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
@@ -49,7 +50,7 @@ public class FlatFilesDelimitedWriteConfiguration {
             new Customer(2, "hong gil dong2", 41),
             new Customer(3, "hong gil dong", 41));
 
-        ListItemReader<Customer> reader = new ListItemReader<>(customers);
+        ListItemReader<Customer> reader = new ListItemReader<>(Collections.EMPTY_LIST);
         return reader;
     }
 
@@ -59,6 +60,7 @@ public class FlatFilesDelimitedWriteConfiguration {
             .name("flatFileWriter")
             .resource(new FileSystemResource("/Users/a1101717/Desktop/inflearn/스프링 배치 - Sping Boot 기반으로 개발하는 Spring Batch/spring-batch/src/main/resources/customer.txt"))
             .append(true)
+            .shouldDeleteIfEmpty(true)      // 기록할 데이터가 없는 경우에는 데이터를 삭제하라.
             .delimited()
             .delimiter("|")
             .names(new String[] {"id", "name", "age"})
