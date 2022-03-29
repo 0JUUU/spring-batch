@@ -16,7 +16,7 @@ public class Customer {
     @Id
     @GeneratedValue
     private Long id;
-    private String location;
+    private String username;
     private int age;
 
     @OneToOne(mappedBy = "customer")
