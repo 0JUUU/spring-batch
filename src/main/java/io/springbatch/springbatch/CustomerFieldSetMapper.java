@@ -9,9 +9,9 @@ public class CustomerFieldSetMapper implements FieldSetMapper<Customer> {
     public Customer mapFieldSet(FieldSet fieldSet) {
         Customer customer = new Customer();
 
-        customer.setName(fieldSet.readString(0));
-        customer.setYear(fieldSet.readString(1));
-        customer.setAge(fieldSet.readInt(2));
+        customer.setName(fieldSet.readString("name"));
+        customer.setYear(fieldSet.readString("year"));
+        customer.setAge(fieldSet.readInt("age"));
 
         return customer;
     }
