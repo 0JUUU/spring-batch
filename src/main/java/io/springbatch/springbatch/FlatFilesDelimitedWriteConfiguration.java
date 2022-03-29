@@ -58,6 +58,7 @@ public class FlatFilesDelimitedWriteConfiguration {
         return new FlatFileItemWriterBuilder<>()
             .name("flatFileWriter")
             .resource(new FileSystemResource("/Users/a1101717/Desktop/inflearn/스프링 배치 - Sping Boot 기반으로 개발하는 Spring Batch/spring-batch/src/main/resources/customer.txt"))
+            .append(true)
             .delimited()
             .delimiter("|")
             .names(new String[] {"id", "name", "age"})
