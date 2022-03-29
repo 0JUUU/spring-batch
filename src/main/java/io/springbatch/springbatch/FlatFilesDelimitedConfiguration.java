@@ -49,7 +49,7 @@ public class FlatFilesDelimitedConfiguration {
     public Step step1() {
         return stepBuilderFactory.get("step1")
             .<String, String>chunk(3)
-            .reader(itemReader())
+            .reader(itemReader2())
             .writer(new ItemWriter() {
                 @Override
                 public void write(List items) throws Exception {
@@ -65,6 +65,19 @@ public class FlatFilesDelimitedConfiguration {
             .name("flatFile")
             .resource(new ClassPathResource("/customer.csv"))
             .fieldSetMapper(new CustomerFieldSetMapper())
+            .linesToSkip(1)
+            .delimited().delimiter(",") // 구분자 방식으로 line을 토큰화시키겠다 (default : ,)
+            .names("name", "year", "age")   // 이름으로 가져올 수 있도록 설정
+            .build();
+    }
+
+    @Bean
+    public ItemReader itemReader2() {
+        return new FlatFileItemReaderBuilder<Customer>()
+            .name("flatFile")
+            .resource(new ClassPathResource("/customer.csv"))
+            .fieldSetMapper(new BeanWrapperFieldSetMapper<>())
+            .targetType(Customer.class)
             .linesToSkip(1)
             .delimited().delimiter(",") // 구분자 방식으로 line을 토큰화시키겠다 (default : ,)
             .names("name", "year", "age")   // 이름으로 가져올 수 있도록 설정
