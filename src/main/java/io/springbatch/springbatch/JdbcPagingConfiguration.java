@@ -11,9 +11,11 @@ import org.springframework.batch.core.configuration.annotation.StepBuilderFactor
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
+import org.springframework.batch.item.database.JdbcPagingItemReader;
 import org.springframework.batch.item.database.Order;
 import org.springframework.batch.item.database.PagingQueryProvider;
 import org.springframework.batch.item.database.builder.JdbcPagingItemReaderBuilder;
+import org.springframework.batch.item.database.support.MySqlPagingQueryProvider;
 import org.springframework.batch.item.database.support.SqlPagingQueryProviderFactoryBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -39,7 +41,7 @@ public class JdbcPagingConfiguration {
     public Step step1() throws Exception {
         return stepBuilderFactory.get("step1")
             .<Customer, Customer>chunk(10)
-            .reader(customItemReader())
+            .reader(customItemReader2())
             .writer(customItemWriter())
             .build();
     }
@@ -73,6 +75,32 @@ public class JdbcPagingConfiguration {
         queryProvider.setSortKeys(sortKeys);
         return queryProvider.getObject();
     }
+
+    @Bean
+     public ItemReader<? extends Customer> customItemReader2() {
+         JdbcPagingItemReader<Customer> reader = new JdbcPagingItemReader<>();
+
+         reader.setDataSource(this.dataSource);
+         reader.setFetchSize(5);
+         reader.setPageSize(5);
+         reader.setSaveState(true);
+         reader.setRowMapper(new CustomerRowMapper());
+
+         HashMap<String, Object> parameters = new HashMap<>();
+         parameters.put("firstname", "A%");
+         reader.setParameterValues(parameters);
+
+         MySqlPagingQueryProvider queryProvider = new MySqlPagingQueryProvider();
+         queryProvider.setSelectClause("id, firstName, lastName, birthdate");
+         queryProvider.setFromClause("from customer");
+         queryProvider.setWhereClause("where firstname like :firstname");
+         Map<String, Order> sortKeys = new HashMap<>(1);
+         sortKeys.put("id", Order.ASCENDING);
+         queryProvider.setSortKeys(sortKeys);
+         reader.setQueryProvider(queryProvider);
+
+         return reader;
+     }
 
     @Bean
     public ItemWriter<Customer> customItemWriter() {
