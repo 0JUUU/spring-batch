@@ -1,5 +1,6 @@
 package io.springbatch.springbatch;
 
+import java.util.Currency;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.*;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
@@ -48,13 +49,25 @@ public class FlatFilesDelimitedConfiguration {
     public Step step1() {
         return stepBuilderFactory.get("step1")
             .<String, String>chunk(3)
-            .reader(null)
+            .reader(itemReader())
             .writer(new ItemWriter() {
                 @Override
                 public void write(List items) throws Exception {
-                    items.forEach(item -> System.out.println(item));
+                    System.out.println(items);
                 }
             })
+            .build();
+    }
+
+    @Bean
+    public ItemReader itemReader() {
+        return new FlatFileItemReaderBuilder<Customer>()
+            .name("flatFile")
+            .resource(new ClassPathResource("/customer.csv"))
+            .fieldSetMapper(new CustomerFieldSetMapper())
+            .linesToSkip(1)
+            .delimited().delimiter(",") // 구분자 방식으로 line을 토큰화시키겠다 (default : ,)
+            .names("name", "year", "age")   // 이름으로 가져올 수 있도록 설정
             .build();
     }
 
