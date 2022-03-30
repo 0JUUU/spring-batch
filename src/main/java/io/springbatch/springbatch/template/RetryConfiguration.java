@@ -86,7 +86,7 @@ public class RetryConfiguration {
         SimpleRetryPolicy simpleRetryPolicy = new SimpleRetryPolicy(2, exceptionClass);
         RetryTemplate retryTemplate = new RetryTemplate();
         retryTemplate.setRetryPolicy(simpleRetryPolicy);
-//        retryTemplate.setBackOffPolicy(backOffPolicy);
+        retryTemplate.setBackOffPolicy(backOffPolicy);
 
         return retryTemplate;
     }
