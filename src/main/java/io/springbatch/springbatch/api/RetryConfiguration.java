@@ -1,5 +1,6 @@
-package io.springbatch.springbatch;
+package io.springbatch.springbatch.api;
 
+import io.springbatch.springbatch.RetryableException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
