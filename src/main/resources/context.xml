@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<customers>
+  <customer>
+    <id>17</id>
+    <firstName>Aimee</firstName>
+    <lastName>Cox</lastName>
+    <birthdate class="sql-date">1976-10-15</birthdate>
+  </customer>
+  <customer>
+    <id>32</id>
+    <firstName>Ali</firstName>
+    <lastName>Browning</lastName>
+    <birthdate class="sql-date">1979-03-27</birthdate>
+  </customer>
+  <customer>
+    <id>44</id>
+    <firstName>Astra</firstName>
+    <lastName>Winters</lastName>
+    <birthdate class="sql-date">1952-03-13</birthdate>
+  </customer>
+  <customer>
+    <id>62</id>
+    <firstName>Alexa</firstName>
+    <lastName>Walters</lastName>
+    <birthdate class="sql-date">1977-12-06</birthdate>
+  </customer>
+  <customer>
+    <id>76</id>
+    <firstName>Ariana</firstName>
+    <lastName>Cochran</lastName>
+    <birthdate class="sql-date">1959-12-04</birthdate>
+  </customer>
+</customers>
