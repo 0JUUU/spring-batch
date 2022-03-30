@@ -43,7 +43,7 @@ public class ClassifierConfiguration {
                     return i > 3 ? null : processorInfo;
                 }
             })
-            .writer(null)
+            .writer(System.out::println)
             .build();
     }
 }
