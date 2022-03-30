@@ -8,6 +8,7 @@ import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
+import org.springframework.batch.core.step.skip.AlwaysSkipItemSkipPolicy;
 import org.springframework.batch.core.step.skip.LimitCheckingItemSkipPolicy;
 import org.springframework.batch.core.step.skip.SkipPolicy;
 import org.springframework.batch.item.ItemProcessor;
@@ -52,7 +53,8 @@ public class SkipConfiguration {
             .faultTolerant()
 //            .skip(SkippableException.class)
 //            .skipLimit(3)
-            .skipPolicy(limitCheckingItemSkipPolicy())
+//            .skipPolicy(limitCheckingItemSkipPolicy())
+            .skipPolicy(new AlwaysSkipItemSkipPolicy())
             .build();
     }
 
