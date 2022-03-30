@@ -39,10 +39,10 @@ public class SkipConfiguration {
             .reader(new ItemReader<String>() {
                 int i = 0;
                 @Override
-                public String read() throws SkippableException {
+                public String read() throws NoSkippableException {
                     i++;
                     if(i == 3) {
-                        throw new SkippableException("skip");
+                        throw new NoSkippableException("skip");
                     }
                     System.out.println("ItemReader : " + i);
                     return i > 20 ? null : String.valueOf(i);
@@ -54,7 +54,8 @@ public class SkipConfiguration {
 //            .skip(SkippableException.class)
 //            .skipLimit(3)
 //            .skipPolicy(limitCheckingItemSkipPolicy())
-            .skipPolicy(new AlwaysSkipItemSkipPolicy())
+//            .skipPolicy(new AlwaysSkipItemSkipPolicy())
+            .noSkip(NoSkippableException.class)
             .build();
     }
 
