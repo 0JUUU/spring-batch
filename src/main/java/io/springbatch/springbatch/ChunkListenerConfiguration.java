@@ -34,12 +34,18 @@ public class ChunkListenerConfiguration {
     public Step step1() throws Exception {
         return stepBuilderFactory.get("step1")
             .<Integer, String>chunk(10)
+            .listener(new CustomChunkListener())
+            .listener(new CustomItemReadListener())
+            .listener(new CustomItemProcessorListener())
+            .listener(new CustomItemWriteListener())
             .reader(listItemReader())
             .processor((ItemProcessor) item -> {
-                    return "item" + item;
+//                throw new RuntimeException(">> Processor has errored");
+                return "item" + item;
             })
             .writer((ItemWriter<String>) items -> {
                 System.out.println("items = " + items);
+//                throw new RuntimeException(">> Writer has errored");
             })
             .build();
     }
