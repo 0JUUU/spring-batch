@@ -32,6 +32,12 @@ public class RetryListenerConfiguration {
         return stepBuilderFactory.get("step1")
             .<Integer, String>chunk(10)
             .reader(listItemReader())
+            .processor(new CustomItemProcessor())
+            .writer(new CustomItemWriter())
+            .faultTolerant()
+            .retry(CustomRetryException.class)
+            .retryLimit(2)
+            .listener(new CustomRetryListener())
             .build();
     }
 
