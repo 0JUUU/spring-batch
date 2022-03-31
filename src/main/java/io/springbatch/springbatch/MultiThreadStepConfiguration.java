@@ -12,13 +12,12 @@ import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.database.BeanPropertyItemSqlParameterSourceProvider;
 import org.springframework.batch.item.database.JdbcBatchItemWriter;
-import org.springframework.batch.item.database.JdbcCursorItemReader;
 import org.springframework.batch.item.database.JdbcPagingItemReader;
 import org.springframework.batch.item.database.Order;
-import org.springframework.batch.item.database.builder.JdbcCursorItemReaderBuilder;
 import org.springframework.batch.item.database.support.MySqlPagingQueryProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
@@ -44,8 +43,11 @@ public class MultiThreadStepConfiguration {
         return stepBuilderFactory.get("step1")
             .<Customer, Customer>chunk(100)
             .reader(pagingItemReader())
+            .listener(new CustomItemReadListener())
             .processor((ItemProcessor<Customer, Customer>) item -> item)
+            .listener(new CustomItemProcessorListener())
             .writer(customItemWriter())
+            .listener(new CustomItemWriteListener())
             .build();
     }
 
