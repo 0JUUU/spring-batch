@@ -10,7 +10,7 @@ import org.springframework.batch.core.configuration.annotation.JobBuilderFactory
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
-import org.springframework.batch.core.step.tasklet.TaskletStep;
+import org.springframework.batch.core.partition.support.Partitioner;
 import org.springframework.batch.item.database.BeanPropertyItemSqlParameterSourceProvider;
 import org.springframework.batch.item.database.JdbcBatchItemWriter;
 import org.springframework.batch.item.database.JdbcPagingItemReader;
@@ -33,16 +33,47 @@ public class PartitioningConfiguration {
     public Job job() throws Exception {
         return jobBuilderFactory.get("batchJob")
             .incrementer(new RunIdIncrementer())
-            .start(new TaskletStep())
+            .start(masterStep())
             .build();
+    }
+
+    @Bean
+    public Step masterStep() {
+        return stepBuilderFactory.get("masterStep")
+            .partitioner(slaveStep().getName(), partitioner())
+            .step(slaveStep())
+            .gridSize(4)    // 4개의 slaveStep의 역할을 할 StepExecution 생성
+            .taskExecutor(new SimpleAsyncTaskExecutor())
+            .build();
+    }
+
+    @Bean
+    public Step slaveStep() {
+        return stepBuilderFactory.get("slaveStep")
+            .<Customer, Customer>chunk(100)
+            .reader(pagingItemReader(null, null))
+            .writer(customerItemWriter())
+            .build();
+    }
+
+    @Bean
+    public Partitioner partitioner() {
+        ColumnRangePartitioner columnRangePartitioner = new ColumnRangePartitioner();
+
+        columnRangePartitioner.setColumn("id");
+        columnRangePartitioner.setDataSource(dataSource);
+        columnRangePartitioner.setTable("customer");
+
+        return columnRangePartitioner;
     }
 
     @Bean
     @StepScope
     public JdbcPagingItemReader<Customer> pagingItemReader(
-        @Value("#{stepExecutionContext['minValue']}")Long minValue,
-        @Value("#{stepExecutionContext['maxValue']}")Long maxValue) {
-        System.out.println("reading " + minValue + " to " + maxValue);
+        @Value("#{stepExecutionContext['minValue']}") Long minValue,
+        @Value("#{stepExecutionContext['maxValue']}") Long maxValue
+    ) {
+        System.out.println("reading : " + minValue + " to " + maxValue);
         JdbcPagingItemReader<Customer> reader = new JdbcPagingItemReader<>();
 
         reader.setDataSource(this.dataSource);
@@ -52,7 +83,7 @@ public class PartitioningConfiguration {
         MySqlPagingQueryProvider queryProvider = new MySqlPagingQueryProvider();
         queryProvider.setSelectClause("id, firstName, lastName, birthdate");
         queryProvider.setFromClause("from customer");
-        queryProvider.setWhereClause("where id >= " + minValue + " and id < " + maxValue);
+        queryProvider.setWhereClause("where id >= " + minValue + " and id <= " + maxValue);
 
         Map<String, Order> sortKeys = new HashMap<>(1);
 
