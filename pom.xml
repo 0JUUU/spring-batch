@@ -60,6 +60,12 @@
 			<groupId>org.springframework.batch</groupId>
 			<artifactId>spring-batch-integration</artifactId>
 		</dependency>
+
+		<!-- Spring Batch Test -->
+		<dependency>
+			<groupId>org.springframework.batch</groupId>
+			<artifactId>spring-batch-test</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>
