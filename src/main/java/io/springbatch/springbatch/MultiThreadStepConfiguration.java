@@ -12,8 +12,10 @@ import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.database.BeanPropertyItemSqlParameterSourceProvider;
 import org.springframework.batch.item.database.JdbcBatchItemWriter;
+import org.springframework.batch.item.database.JdbcCursorItemReader;
 import org.springframework.batch.item.database.JdbcPagingItemReader;
 import org.springframework.batch.item.database.Order;
+import org.springframework.batch.item.database.builder.JdbcCursorItemReaderBuilder;
 import org.springframework.batch.item.database.support.MySqlPagingQueryProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -42,7 +44,7 @@ public class MultiThreadStepConfiguration {
     public Step step1() throws Exception {
         return stepBuilderFactory.get("step1")
             .<Customer, Customer>chunk(100)
-            .reader(pagingItemReader())
+            .reader(customItemReader())
             .listener(new CustomItemReadListener())
             .processor((ItemProcessor<Customer, Customer>) item -> item)
             .listener(new CustomItemProcessorListener())
@@ -60,6 +62,17 @@ public class MultiThreadStepConfiguration {
         taskExecutor.setMaxPoolSize(8);
         taskExecutor.setThreadNamePrefix("async-thread");
         return taskExecutor;
+    }
+
+    @Bean
+    public JdbcCursorItemReader<Customer> customItemReader() {
+        return new JdbcCursorItemReaderBuilder()
+            .name("jdbcCursorItemReader")
+            .fetchSize(100)
+            .sql("select id, firstName, lastName, birthdate from customer order by id")
+            .beanRowMapper(Customer.class)
+            .dataSource(dataSource)
+            .build();
     }
 
     @Bean
