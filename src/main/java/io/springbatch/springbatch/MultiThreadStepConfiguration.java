@@ -48,7 +48,18 @@ public class MultiThreadStepConfiguration {
             .listener(new CustomItemProcessorListener())
             .writer(customItemWriter())
             .listener(new CustomItemWriteListener())
+            .taskExecutor(taskExecutor())     // 얘를 설정하지 않으면 단일스레드로 동작
             .build();
+    }
+
+    // 비동기적인 멀티스레드 환경 제공
+    @Bean
+    public TaskExecutor taskExecutor() {
+        ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
+        taskExecutor.setCorePoolSize(4);
+        taskExecutor.setMaxPoolSize(8);
+        taskExecutor.setThreadNamePrefix("async-thread");
+        return taskExecutor;
     }
 
     @Bean
